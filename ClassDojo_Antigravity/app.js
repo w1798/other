@@ -50,9 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Audio Feedback (Web Audio API) ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let audioCtx = null;
     const playSound = (type) => {
         if (!settings.enableSound) return;
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
@@ -908,6 +909,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const addStudent = () => {
+        const newStudentNameInput = document.getElementById('newStudentName');
         const inputStr = newStudentNameInput.value.trim();
         if(!inputStr) return;
         
