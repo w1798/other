@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學生積分管理系統</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6A4040;
+            --primary-hover: #8B5555;
+            --secondary: #0085FF;
+            --accent: #FFCC5D;
+            --success: #22C55E;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --text-primary: #202020;
+            --text-secondary: #9C9C9C;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #EEEEEE;
+            --border: rgba(32, 32, 32, 0.08);
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme {
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --bg-primary: #202020;
+            --bg-secondary: #2A2A2A;
+            --border: rgba(255, 255, 255, 0.12);
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-icon {
+            padding: 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-secondary);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -320px;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: var(--bg-primary);
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background: var(--border);
+            transform: translateX(4px);
+        }
+
+        .sidebar-item-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .sidebar-item-icon {
+            font-size: 20px;
+        }
+
+        .sidebar-item-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .sidebar-item-btn {
+            padding: 4px 8px;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .sidebar-item-btn:hover {
+            background: var(--bg-primary);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        .toolbar {
+            background: var(--bg-primary);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .toolbar-section {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 8px;
+        }
+
+        .leaderboard {
+            background: var(--bg-primary);
+            margin: 24px;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .leaderboard-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .leaderboard-rank {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 32px;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .leaderboard-points {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            padding: 24px;
+        }
+
+        .student-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .student-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .student-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(106, 64, 64, 0.1) 100%);
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .student-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .student-points {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .student-groups {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            min-height: 24px;
+        }
+
+        .group-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .color-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--bg-primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 8px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            background: var(--border);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            animation: slideIn 0.3s;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item-content {
+            flex: 1;
+        }
+
+        .history-item-action {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .history-item-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .history-item-points {
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .history-item-points.positive {
+            color: var(--success);
+        }
+
+        .history-item-points.negative {
+            color: var(--danger);
+        }
+
+        .summary-period {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .period-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .period-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .summary-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .summary-item {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .summary-item:hover {
+            background: var(--border);
+        }
+
+        .summary-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .summary-item-name {
+            font-weight: 600;
+        }
+
+        .summary-item-total {
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .summary-item-details {
+            display: none;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+        }
+
+        .summary-item.expanded .summary-item-details {
+            display: block;
+        }
+
+        .kuse-branding {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 100;
+        }
+
+        .kuse-branding:hover {
+            color: var(--primary);
+        }
+
+        .kuse-branding svg {
+            height: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .header-title {
+                font-size: 16px;
+            }
+
+            .toolbar {
+                padding: 12px 16px;
+            }
+
+            .students-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 12px;
+                padding: 16px;
+            }
+
+            .leaderboard {
+                margin: 16px;
+                padding: 16px;
+            }
+
+            .sidebar {
+                width: 280px;
+                left: -280px;
+            }
+        }
+
+        .font-small { font-size: 12px; }
+        .font-medium { font-size: 14px; }
+        .font-large { font-size: 16px; }
+        .font-xlarge { font-size: 18px; }
+
+        .grid-2 { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+        .grid-5 { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+        .grid-6 { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">☰ 選單</span>
+            <button class="btn-icon" onclick="toggleSidebar()">✕</button>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">📁 群組管理</div>
+            <div id="groupsList"></div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" onclick="openGroupModal()">➕ 新增群組</button>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">➕ 加分項目</div>
+            <div id="positiveActionsList"></div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" onclick="openActionModal('positive')">➕ 新增項目</button>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">➖ 扣分項目</div>
+            <div id="negativeActionsList"></div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 12px;" onclick="openActionModal('negative')">➕ 新增項目</button>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">📤 匯出與工具</div>
+            <button class="btn btn-secondary" style="width: 100%; margin-bottom: 8px;" onclick="exportCSV()">📊 匯出 CSV</button>
+            <button class="btn btn-secondary" style="width: 100%; margin-bottom: 8px;" onclick="exportJSON()">💾 匯出 JSON</button>
+            <button class="btn btn-secondary" style="width: 100%; margin-bottom: 8px;" onclick="printReport()">🖨️ 列印報表</button>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="batchReset()">🔄 批次重置</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <button class="btn-icon" onclick="toggleSidebar()">☰</button>
+        <div class="header-title">學生積分管理系統</div>
+        <div class="header-actions">
+            <button class="btn-icon" onclick="undoLastAction()" title="復原">↩️</button>
+            <button class="btn-icon" onclick="toggleSearch()" title="搜尋">🔍</button>
+            <button class="btn-icon" onclick="openSummaryModal()" title="統計">📊</button>
+            <button class="btn-icon" onclick="openSettingsModal()" title="設定">⚙️</button>
+            <button class="btn-icon" onclick="toggleTheme()" title="切換主題">🌓</button>
+            <button class="btn btn-primary" onclick="openStudentModal()">➕ 新增學生</button>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="toolbar-section">
+            <button class="btn btn-secondary" onclick="toggleMultiSelectMode()">
+                <span id="multiSelectText">多選模式: OFF</span>
+            </button>
+            <button class="btn btn-secondary" onclick="selectAll()">全選</button>
+            <button class="btn btn-secondary" onclick="clearSelection()">清除</button>
+            <span style="color: var(--text-secondary);">已選: <span id="selectedCount">0</span>位</span>
+        </div>
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-section">
+            <button class="btn btn-secondary" onclick="batchAddPoints(1)" title="快速加1分">+1 快速加分</button>
+            <button class="btn btn-secondary" onclick="batchAddPoints(2)" title="快速加2分">+2 快速加分</button>
+            <button class="btn btn-secondary" onclick="batchAddPoints(5)" title="快速加5分">+5 快速加分</button>
+            <button class="btn btn-secondary" onclick="batchAddPoints(-1)" title="快速扣1分">-1 快速扣分</button>
+            <button class="btn btn-secondary" onclick="batchAddPoints(-2)" title="快速扣2分">-2 快速扣分</button>
+            <button class="btn btn-secondary" onclick="batchAddPoints(-5)" title="快速扣5分">-5 快速扣分</button>
+            <button class="btn btn-secondary" onclick="openCustomPointsModal()" title="自訂分數">✏️ 自訂分數</button>
+        </div>
+    </div>
+
+    <div class="leaderboard" id="leaderboard">
+        <div class="leaderboard-title">📊 排行榜 TOP 5</div>
+        <div id="leaderboardList"></div>
+    </div>
+
+    <div class="students-grid" id="studentsGrid"></div>
+
+    <div class="modal" id="studentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="studentModalTitle">新增學生</div>
+                <button class="modal-close" onclick="closeModal('studentModal')">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">姓名</label>
+                <input type="text" class="form-input" id="studentName" placeholder="請輸入學生姓名">
+            </div>
+            <div class="form-group">
+                <label class="form-label">頭像顏色</label>
+                <div class="color-picker-grid" id="avatarColorPicker"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">加入群組</label>
+                <div class="checkbox-group" id="studentGroupsCheckbox"></div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="saveStudent()">儲存</button>
+        </div>
+    </div>
+
+    <div class="modal" id="groupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="groupModalTitle">新增群組</div>
+                <button class="modal-close" onclick="closeModal('groupModal')">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">群組名稱</label>
+                <input type="text" class="form-input" id="groupName" placeholder="請輸入群組名稱">
+            </div>
+            <div class="form-group">
+                <label class="form-label">群組顏色</label>
+                <div class="color-picker-grid" id="groupColorPicker"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">成員</label>
+                <div class="checkbox-group" id="groupStudentsCheckbox"></div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="saveGroup()">儲存</button>
+        </div>
+    </div>
+
+    <div class="modal" id="actionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="actionModalTitle">新增積分項目</div>
+                <button class="modal-close" onclick="closeModal('actionModal')">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">項目名稱</label>
+                <input type="text" class="form-input" id="actionName" placeholder="請輸入項目名稱">
+            </div>
+            <div class="form-group">
+                <label class="form-label">分數</label>
+                <input type="number" class="form-input" id="actionPoints" placeholder="請輸入分數">
+            </div>
+            <div class="form-group">
+                <label class="form-label">圖示</label>
+                <input type="text" class="form-input" id="actionIcon" placeholder="請輸入圖示 emoji">
+            </div>
+            <div class="form-group">
+                <label class="form-label">顏色</label>
+                <div class="color-picker-grid" id="actionColorPicker"></div>
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="actionExclude">
+                    <span>不列入統計</span>
+                </label>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="saveAction()">儲存</button>
+        </div>
+    </div>
+
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="historyModalTitle">積分記錄</div>
+                <button class="modal-close" onclick="closeModal('historyModal')">✕</button>
+            </div>
+            <div class="history-list" id="historyList"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="summaryModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title">📊 積分統計</div>
+                <button class="modal-close" onclick="closeModal('summaryModal')">✕</button>
+            </div>
+            <div class="summary-period">
+                <button class="period-btn active" onclick="setPeriod('all')">全部</button>
+                <button class="period-btn" onclick="setPeriod('today')">今天</button>
+                <button class="period-btn" onclick="setPeriod('week')">本週</button>
+                <button class="period-btn" onclick="setPeriod('lastweek')">上週</button>
+                <button class="period-btn" onclick="setPeriod('custom')">自訂</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">排序方式</label>
+                <select class="form-input" id="sortOrder" onchange="renderSummary()">
+                    <option value="pointsDesc">依分數高到低</option>
+                    <option value="pointsAsc">依分數低到高</option>
+                    <option value="nameAsc">依姓名A-Z</option>
+                    <option value="nameDesc">依姓名Z-A</option>
+                </select>
+            </div>
+            <div class="summary-list" id="summaryList"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">⚙️ 系統設定</div>
+                <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">字體大小</label>
+                <select class="form-input" id="fontSizeSetting" onchange="updateSettings()">
+                    <option value="small">小</option>
+                    <option value="medium">中</option>
+                    <option value="large">大</option>
+                    <option value="xlarge">特大</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">每列學生數</label>
+                <select class="form-input" id="studentsPerRowSetting" onchange="updateSettings()">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="soundEnabledSetting" onchange="updateSettings()">
+                    <span>音效</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="showAvatarsSetting" onchange="updateSettings()">
+                    <span>顯示頭像</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="showLeaderboardSetting" onchange="updateSettings()">
+                    <span>顯示排行榜</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="customPointsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">自訂積分</div>
+                <button class="modal-close" onclick="closeModal('customPointsModal')">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">分數</label>
+                <input type="number" class="form-input" id="customPoints" placeholder="請輸入分數（正數加分，負數扣分）">
+            </div>
+            <div class="form-group">
+                <label class="form-label">原因</label>
+                <input type="text" class="form-input" id="customReason" placeholder="請輸入原因">
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="applyCustomPoints()">套用</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <a href="https://kuse.ai" target="_blank" class="kuse-branding">
+        <span>made with</span>
+        <svg viewBox="0,0,160,44" xmlns="http://www.w3.org/2000/svg"><path d="m.01,20.65C-.43,8.25,9.3-2.03,22.04.34,34.78,2.72,43.29,8.32,43.29,22.9s-8.66,19.01-22.03,20.3C7.9,44.5.46,33.05.01,20.65z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="m146.76,7.94c8.07,0,13.24,6.15,13.24,14.58v1.39h-20.75c.45,4.05,3.51,7.37,8.57,7.37,2.62,0,5.73-1.05,7.62-2.94l2.67,3.83c-2.67,2.55-6.62,3.88-10.9,3.88-8.07,0-14.08-5.6-14.08-14.08,0-7.76,5.67-14.02,13.63-14.02zm0,4.77c-5.01,0-7.29,3.83-7.57,7.1h15.13c-.11-3.16-2.28-7.1-7.57-7.1z" fill="currentColor"/><path d="m86.64,24.49c0,4.15,2.39,6.84,6.84,6.84,4.4,0,6.84-2.69,6.84-6.84V8.55h5.37v16.33c0,6.7-4.06,11.14-12.21,11.14-8.21,0-12.21-4.5-12.21-11.09V8.55h5.37v15.94zm32.99-16.55c4.49,0,8.06,1.47,10.6,3.86l-2.59,3.81c-2.05-2-5.28-3.08-8.06-3.08-2.88,0-4.84,1.37-4.84,3.32,0,1.91,2.64,2.54,5.81,3.27,4.59,1.08,10.26,2.4,10.26,8.46,0,4.94-3.76,8.41-11.14,8.41-4.98,0-8.94-1.76-11.24-4.11l2.54-4.11c1.86,1.91,5.18,3.67,8.84,3.67,3.91,0,5.57-1.66,5.57-3.62,0-2.3-2.88-2.98-6.21-3.76-4.54-1.08-9.87-2.3-9.87-8.06,0-4.5,4.2-8.06,10.31-8.06zM60.79,20.82,71.44,8.55h6.5L66.46,21.26,78.82,35.44h-6.5l-9.28-11.1-2.25,2.49v8.6h-5.33V8.55h5.33v12.27z" fill="currentColor"/></svg>
+    </a>
+
+    <script>
+        const COLORS = [`#FF6B6B`, `#4ECDC4`, `#FFD93D`, `#95E1D3`, `#4285F4`, `#34A853`, `#FBBC04`, `#EA4335`, `#8B5CF6`, `#EC4899`, `#F59E0B`, `#10B981`];
+
+        let students = [];
+        let groups = [];
+        let pointActions = [];
+        let settings = {
+            fontSize: `medium`,
+            studentsPerRow: 4,
+            soundEnabled: true,
+            showAvatars: true,
+            showLeaderboard: true,
+            theme: `light`
+        };
+        let undoStack = [];
+        let selectedStudents = new Set();
+        let multiSelectMode = false;
+        let currentEditingStudent = null;
+        let currentEditingGroup = null;
+        let currentEditingAction = null;
+        let currentActionType = `positive`;
+        let currentPeriod = `all`;
+        let customStartDate = null;
+        let customEndDate = null;
+
+        function loadData() {
+            const savedStudents = localStorage.getItem(`students`);
+            const savedGroups = localStorage.getItem(`groups`);
+            const savedActions = localStorage.getItem(`pointActions`);
+            const savedSettings = localStorage.getItem(`settings`);
+            const savedUndo = localStorage.getItem(`undoStack`);
+
+            if (savedStudents) {
+                students = JSON.parse(savedStudents);
+                // 資料遷移：確保所有學生都有 groupIds 屬性
+                students.forEach(student => {
+                    if (!student.groupIds) {
+                        student.groupIds = [];
+                    }
+                });
+            } else {
+                students = [
+                    { id: `s1`, name: `王小明`, avatar: `#FF6B6B`, points: 0, groupIds: [], history: [] },
+                    { id: `s2`, name: `李小華`, avatar: `#4ECDC4`, points: 0, groupIds: [], history: [] },
+                    { id: `s3`, name: `張小美`, avatar: `#FFD93D`, points: 0, groupIds: [], history: [] },
+                    { id: `s4`, name: `陳小強`, avatar: `#95E1D3`, points: 0, groupIds: [], history: [] }
+                ];
+            }
+
+            if (savedGroups) {
+                groups = JSON.parse(savedGroups);
+                // 資料遷移：確保所有群組都有 studentIds 屬性
+                groups.forEach(group => {
+                    if (!group.studentIds) {
+                        group.studentIds = [];
+                    }
+                });
+            } else {
+                groups = [
+                    { id: `g1`, name: `第一組`, color: `#4285F4`, studentIds: [] },
+                    { id: `g2`, name: `第二組`, color: `#34A853`, studentIds: [] }
+                ];
+            }
+
+            if (savedActions) {
+                pointActions = JSON.parse(savedActions);
+            } else {
+                pointActions = [
+                    { id: `p1`, name: `完成作業`, points: 5, icon: `📝`, color: `#22C55E`, type: `positive`, excludeFromTotal: false },
+                    { id: `p2`, name: `上課發言`, points: 3, icon: `🗣️`, color: `#3B82F6`, type: `positive`, excludeFromTotal: false },
+                    { id: `p3`, name: `幫助同學`, points: 4, icon: `🤝`, color: `#8B5CF6`, type: `positive`, excludeFromTotal: false },
+                    { id: `n1`, name: `遲到`, points: -2, icon: `⏱️`, color: `#EF4444`, type: `negative`, excludeFromTotal: false },
+                    { id: `n2`, name: `未交作業`, points: -5, icon: `❌`, color: `#DC2626`, type: `negative`, excludeFromTotal: false }
+                ];
+            }
+
+            if (savedSettings) {
+                settings = JSON.parse(savedSettings);
+                applySettings();
+            }
+
+            if (savedUndo) {
+                undoStack = JSON.parse(savedUndo);
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem(`students`, JSON.stringify(students));
+            localStorage.setItem(`groups`, JSON.stringify(groups));
+            localStorage.setItem(`pointActions`, JSON.stringify(pointActions));
+            localStorage.setItem(`settings`, JSON.stringify(settings));
+            localStorage.setItem(`undoStack`, JSON.stringify(undoStack));
+        }
+
+        function renderStudents() {
+            const grid = document.getElementById(`studentsGrid`);
+            grid.innerHTML = ``;
+
+            students.forEach(student => {
+                const card = document.createElement(`div`);
+                card.className = `student-card`;
+                if (selectedStudents.has(student.id)) {
+                    card.className += ` selected`;
+                }
+
+                const avatar = settings.showAvatars ? `<div class="student-avatar" style="background: ${student.avatar}">${student.name.charAt(0)}</div>` : ``;
+
+                const groupBadges = (student.groupIds || []).map(gid => {
+                    const group = groups.find(g => g.id === gid);
+                    return group ? `<span class="group-badge" style="background: ${group.color}">${group.name}</span>` : ``;
+                }).join(``);
+
+                card.innerHTML = `
+                    ${avatar}
+                    <div class="student-name">${student.name}</div>
+                    <div class="student-points">${student.points}分</div>
+                    <div class="student-groups">${groupBadges}</div>
+                    <div class="student-actions">
+                        <button class="btn btn-secondary" onclick="openHistoryModal('${student.id}')">📋 記錄</button>
+                        <button class="btn btn-secondary" onclick="editStudent('${student.id}')">✏️</button>
+                        <button class="btn btn-secondary" onclick="deleteStudent('${student.id}')">🗑️</button>
+                    </div>
+                `;
+
+                card.addEventListener(`click`, (e) => {
+                    if (!e.target.closest(`.student-actions`)) {
+                        toggleStudentSelection(student.id);
+                    }
+                });
+
+                grid.appendChild(card);
+            });
+
+            updateSelectedCount();
+        }
+
+        function renderGroups() {
+            const list = document.getElementById(`groupsList`);
+            list.innerHTML = ``;
+
+            groups.forEach(group => {
+                const count = (group.studentIds || []).length;
+                const item = document.createElement(`div`);
+                item.className = `sidebar-item`;
+                item.innerHTML = `
+                    <div class="sidebar-item-content">
+                        <span class="sidebar-item-icon" style="color: ${group.color}">⬤</span>
+                        <span>${group.name} (${count}人)</span>
+                    </div>
+                    <div class="sidebar-item-actions">
+                        <button class="sidebar-item-btn" onclick="event.stopPropagation(); editGroup('${group.id}')">✏️</button>
+                        <button class="sidebar-item-btn" onclick="event.stopPropagation(); deleteGroup('${group.id}')">🗑️</button>
+                    </div>
+                `;
+                item.addEventListener(`click`, () => selectGroupStudents(group.id));
+                list.appendChild(item);
+            });
+        }
+
+        function renderPointActions() {
+            const positiveList = document.getElementById(`positiveActionsList`);
+            const negativeList = document.getElementById(`negativeActionsList`);
+            positiveList.innerHTML = ``;
+            negativeList.innerHTML = ``;
+
+            pointActions.forEach(action => {
+                const item = document.createElement(`div`);
+                item.className = `sidebar-item`;
+                const excludeText = action.excludeFromTotal ? ` (不計)` : ``;
+                item.innerHTML = `
+                    <div class="sidebar-item-content">
+                        <span class="sidebar-item-icon">${action.icon}</span>
+                        <span>${action.name} ${action.points > 0 ? `+` : ``}${action.points}${excludeText}</span>
+                    </div>
+                    <div class="sidebar-item-actions">
+                        <button class="sidebar-item-btn" onclick="event.stopPropagation(); editAction('${action.id}')">✏️</button>
+                        <button class="sidebar-item-btn" onclick="event.stopPropagation(); deleteAction('${action.id}')">🗑️</button>
+                    </div>
+                `;
+                item.addEventListener(`click`, () => applyPointAction(action.id));
+
+                if (action.type === `positive`) {
+                    positiveList.appendChild(item);
+                } else {
+                    negativeList.appendChild(item);
+                }
+            });
+        }
+
+        function renderLeaderboard() {
+            if (!settings.showLeaderboard) {
+                document.getElementById(`leaderboard`).style.display = `none`;
+                return;
+            }
+
+            document.getElementById(`leaderboard`).style.display = `block`;
+            const list = document.getElementById(`leaderboardList`);
+            const sorted = [...students].sort((a, b) => b.points - a.points).slice(0, 5);
+
+            list.innerHTML = sorted.map((student, index) => `
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">${index + 1}.</div>
+                    <div class="leaderboard-name">${student.name}</div>
+                    <div class="leaderboard-points">${student.points}分</div>
+                </div>
+            `).join(``);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById(`sidebar`);
+            const overlay = document.getElementById(`overlay`);
+            sidebar.classList.toggle(`open`);
+            overlay.classList.toggle(`show`);
+        }
+
+        document.getElementById(`overlay`).addEventListener(`click`, toggleSidebar);
+
+        function toggleStudentSelection(id) {
+            if (selectedStudents.has(id)) {
+                selectedStudents.delete(id);
+            } else {
+                selectedStudents.add(id);
+            }
+            renderStudents();
+            playSound();
+        }
+
+        function toggleMultiSelectMode() {
+            multiSelectMode = !multiSelectMode;
+            document.getElementById(`multiSelectText`).textContent = `多選模式: ${multiSelectMode ? `ON` : `OFF`}`;
+        }
+
+        function selectAll() {
+            students.forEach(s => selectedStudents.add(s.id));
+            renderStudents();
+        }
+
+        function clearSelection() {
+            selectedStudents.clear();
+            renderStudents();
+        }
+
+        function updateSelectedCount() {
+            document.getElementById(`selectedCount`).textContent = selectedStudents.size;
+        }
+
+        function selectGroupStudents(groupId) {
+            const group = groups.find(g => g.id === groupId);
+            if (!group) return;
+
+            clearSelection();
+            group.studentIds.forEach(sid => selectedStudents.add(sid));
+            renderStudents();
+            showToast(`已選擇 ${group.name} 的 ${group.studentIds.length} 位學生`);
+            toggleSidebar();
+        }
+
+        function applyPointAction(actionId) {
+            const action = pointActions.find(a => a.id === actionId);
+            if (!action) return;
+
+            if (selectedStudents.size === 0) {
+                showToast(`請先選擇學生`);
+                return;
+            }
+
+            selectedStudents.forEach(sid => {
+                addPoints(sid, action.points, action.name, action.excludeFromTotal);
+            });
+
+            showToast(`已對 ${selectedStudents.size} 位學生套用「${action.name}」`);
+            clearSelection(); // 自動取消圈選
+            toggleSidebar();
+        }
+
+        function addPoints(studentId, points, action, excludeFromTotal = false) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            student.points += points;
+            student.history.push({
+                action,
+                points,
+                timestamp: Date.now(),
+                excludeFromTotal
+            });
+
+            undoStack.push({
+                studentId,
+                studentName: student.name,
+                points,
+                action,
+                timestamp: Date.now()
+            });
+
+            if (undoStack.length > 10) {
+                undoStack.shift();
+            }
+
+            saveData();
+            renderStudents();
+            renderLeaderboard();
+            playSound();
+        }
+
+        function batchAddPoints(points) {
+            if (selectedStudents.size === 0) {
+                showToast(`請先選擇學生`);
+                return;
+            }
+
+            selectedStudents.forEach(sid => {
+                addPoints(sid, points, `快速${points > 0 ? `加` : `扣`}分`);
+            });
+
+            showToast(`已對 ${selectedStudents.size} 位學生${points > 0 ? `加` : `扣`}${Math.abs(points)}分`);
+            clearSelection(); // 自動取消圈選
+        }
+
+        function undoLastAction() {
+            if (undoStack.length === 0) {
+                showToast(`沒有可復原的操作`);
+                return;
+            }
+
+            const lastAction = undoStack.pop();
+            const student = students.find(s => s.id === lastAction.studentId);
+            if (student) {
+                student.points -= lastAction.points;
+                student.history = student.history.filter(h => h.timestamp !== lastAction.timestamp);
+                saveData();
+                renderStudents();
+                renderLeaderboard();
+                showToast(`已復原「${lastAction.studentName}」的「${lastAction.action}」`);
+            }
+        }
+
+        function openStudentModal(id = null) {
+            currentEditingStudent = id;
+            const modal = document.getElementById(`studentModal`);
+            const title = document.getElementById(`studentModalTitle`);
+
+            if (id) {
+                const student = students.find(s => s.id === id);
+                title.textContent = `編輯學生`;
+                document.getElementById(`studentName`).value = student.name;
+                renderColorPicker(`avatarColorPicker`, student.avatar);
+                renderStudentGroupsCheckbox(student.groupIds);
+            } else {
+                title.textContent = `新增學生`;
+                document.getElementById(`studentName`).value = ``;
+                renderColorPicker(`avatarColorPicker`, COLORS[0]);
+                renderStudentGroupsCheckbox([]);
+            }
+
+            modal.classList.add(`show`);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove(`show`);
+        }
+
+        function renderColorPicker(containerId, selectedColor) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = COLORS.map(color => `
+                <div class="color-option ${color === selectedColor ? `selected` : ``}" 
+                     style="background: ${color}" 
+                     onclick="selectColor('${containerId}', '${color}')"></div>
+            `).join(``);
+        }
+
+        function selectColor(containerId, color) {
+            const container = document.getElementById(containerId);
+            container.querySelectorAll(`.color-option`).forEach(opt => {
+                opt.classList.remove(`selected`);
+            });
+            // 直接在被點擊的元素上添加 selected class
+            event.target.classList.add(`selected`);
+        }
+
+        function renderStudentGroupsCheckbox(selectedGroups) {
+            const container = document.getElementById(`studentGroupsCheckbox`);
+            container.innerHTML = groups.map(group => `
+                <label class="checkbox-item">
+                    <input type="checkbox" value="${group.id}" ${selectedGroups.includes(group.id) ? `checked` : ``}>
+                    <span style="color: ${group.color}">⬤</span>
+                    <span>${group.name}</span>
+                </label>
+            `).join(``);
+        }
+
+        function renderGroupStudentsCheckbox(selectedStudents) {
+            const container = document.getElementById(`groupStudentsCheckbox`);
+            container.innerHTML = students.map(student => `
+                <label class="checkbox-item">
+                    <input type="checkbox" value="${student.id}" ${selectedStudents.includes(student.id) ? `checked` : ``}>
+                    <span>${student.name}</span>
+                </label>
+            `).join(``);
+        }
+
+        function saveStudent() {
+            const name = document.getElementById(`studentName`).value.trim();
+            if (!name) {
+                showToast(`請輸入學生姓名`);
+                return;
+            }
+
+            const selectedColor = document.querySelector(`#avatarColorPicker .color-option.selected`);
+            if (!selectedColor) {
+                showToast(`請選擇頭像顏色`);
+                return;
+            }
+            const avatar = selectedColor.style.background;
+            const groupIds = Array.from(document.querySelectorAll(`#studentGroupsCheckbox input:checked`)).map(cb => cb.value);
+
+            if (currentEditingStudent) {
+                const student = students.find(s => s.id === currentEditingStudent);
+                const oldGroupIds = student.groupIds;
+                student.name = name;
+                student.avatar = avatar;
+                student.groupIds = groupIds;
+
+                oldGroupIds.forEach(gid => {
+                    const group = groups.find(g => g.id === gid);
+                    if (group) {
+                        group.studentIds = group.studentIds.filter(sid => sid !== student.id);
+                    }
+                });
+
+                groupIds.forEach(gid => {
+                    const group = groups.find(g => g.id === gid);
+                    if (group && !group.studentIds.includes(student.id)) {
+                        group.studentIds.push(student.id);
+                    }
+                });
+            } else {
+                const newStudent = {
+                    id: `s` + Date.now(),
+                    name,
+                    avatar,
+                    points: 0,
+                    groupIds,
+                    history: []
+                };
+                students.push(newStudent);
+
+                groupIds.forEach(gid => {
+                    const group = groups.find(g => g.id === gid);
+                    if (group) {
+                        group.studentIds.push(newStudent.id);
+                    }
+                });
+            }
+
+            saveData();
+            renderStudents();
+            renderGroups();
+            renderLeaderboard();
+            closeModal(`studentModal`);
+            showToast(currentEditingStudent ? `學生資料已更新` : `學生已新增`);
+        }
+
+        function editStudent(id) {
+            openStudentModal(id);
+        }
+
+        function deleteStudent(id) {
+            if (!confirm(`確定要刪除此學生嗎？`)) return;
+
+            students = students.filter(s => s.id !== id);
+            groups.forEach(g => {
+                if (g.studentIds) {
+                    g.studentIds = g.studentIds.filter(sid => sid !== id);
+                }
+            });
+
+            saveData();
+            renderStudents();
+            renderGroups();
+            renderLeaderboard();
+            showToast(`學生已刪除`);
+        }
+
+        function openGroupModal(id = null) {
+            currentEditingGroup = id;
+            const modal = document.getElementById(`groupModal`);
+            const title = document.getElementById(`groupModalTitle`);
+
+            if (id) {
+                const group = groups.find(g => g.id === id);
+                title.textContent = `編輯群組`;
+                document.getElementById(`groupName`).value = group.name;
+                renderColorPicker(`groupColorPicker`, group.color);
+                renderGroupStudentsCheckbox(group.studentIds);
+            } else {
+                title.textContent = `新增群組`;
+                document.getElementById(`groupName`).value = ``;
+                renderColorPicker(`groupColorPicker`, COLORS[0]);
+                renderGroupStudentsCheckbox([]);
+            }
+
+            modal.classList.add(`show`);
+        }
+
+        function saveGroup() {
+            const name = document.getElementById(`groupName`).value.trim();
+            if (!name) {
+                showToast(`請輸入群組名稱`);
+                return;
+            }
+
+            const color = document.querySelector(`#groupColorPicker .color-option.selected`).style.background;
+            const studentIds = Array.from(document.querySelectorAll(`#groupStudentsCheckbox input:checked`)).map(cb => cb.value);
+
+            if (currentEditingGroup) {
+                const group = groups.find(g => g.id === currentEditingGroup);
+                const oldStudentIds = group.studentIds;
+
+                group.name = name;
+                group.color = color;
+                group.studentIds = studentIds;
+
+                oldStudentIds.forEach(sid => {
+                    const student = students.find(s => s.id === sid);
+                    if (student) {
+                        student.groupIds = student.groupIds.filter(gid => gid !== group.id);
+                    }
+                });
+
+                studentIds.forEach(sid => {
+                    const student = students.find(s => s.id === sid);
+                    if (student && !student.groupIds.includes(group.id)) {
+                        student.groupIds.push(group.id);
+                    }
+                });
+            } else {
+                const newGroup = {
+                    id: `g` + Date.now(),
+                    name,
+                    color,
+                    studentIds
+                };
+                groups.push(newGroup);
+
+                studentIds.forEach(sid => {
+                    const student = students.find(s => s.id === sid);
+                    if (student) {
+                        student.groupIds.push(newGroup.id);
+                    }
+                });
+            }
+
+            saveData();
+            renderStudents();
+            renderGroups();
+            closeModal(`groupModal`);
+            showToast(currentEditingGroup ? `群組已更新` : `群組已新增`);
+        }
+
+        function editGroup(id) {
+            openGroupModal(id);
+        }
+
+        function deleteGroup(id) {
+            if (!confirm(`確定要刪除此群組嗎？`)) return;
+
+            const group = groups.find(g => g.id === id);
+            if (group) {
+                group.studentIds.forEach(sid => {
+                    const student = students.find(s => s.id === sid);
+                    if (student) {
+                        student.groupIds = student.groupIds.filter(gid => gid !== id);
+                    }
+                });
+            }
+
+            groups = groups.filter(g => g.id !== id);
+            saveData();
+            renderStudents();
+            renderGroups();
+            showToast(`群組已刪除`);
+        }
+
+        function openActionModal(type = `positive`, id = null) {
+            currentActionType = type;
+            currentEditingAction = id;
+            const modal = document.getElementById(`actionModal`);
+            const title = document.getElementById(`actionModalTitle`);
+
+            if (id) {
+                const action = pointActions.find(a => a.id === id);
+                title.textContent = `編輯積分項目`;
+                document.getElementById(`actionName`).value = action.name;
+                document.getElementById(`actionPoints`).value = action.points;
+                document.getElementById(`actionIcon`).value = action.icon;
+                document.getElementById(`actionExclude`).checked = action.excludeFromTotal;
+                renderColorPicker(`actionColorPicker`, action.color);
+            } else {
+                title.textContent = `新增${type === `positive` ? `加` : `扣`}分項目`;
+                document.getElementById(`actionName`).value = ``;
+                document.getElementById(`actionPoints`).value = type === `positive` ? 5 : -2;
+                document.getElementById(`actionIcon`).value = ``;
+                document.getElementById(`actionExclude`).checked = false;
+                renderColorPicker(`actionColorPicker`, type === `positive` ? `#22C55E` : `#EF4444`);
+            }
+
+            modal.classList.add(`show`);
+        }
+
+        function saveAction() {
+            const name = document.getElementById(`actionName`).value.trim();
+            const points = parseInt(document.getElementById(`actionPoints`).value);
+            const icon = document.getElementById(`actionIcon`).value.trim();
+            const excludeFromTotal = document.getElementById(`actionExclude`).checked;
+
+            if (!name) {
+                showToast(`請輸入項目名稱`);
+                return;
+            }
+
+            if (isNaN(points)) {
+                showToast(`請輸入有效的分數`);
+                return;
+            }
+
+            const selectedColor = document.querySelector(`#actionColorPicker .color-option.selected`);
+            if (!selectedColor) {
+                showToast(`請選擇顏色`);
+                return;
+            }
+            const color = selectedColor.style.background;
+
+            if (currentEditingAction) {
+                const action = pointActions.find(a => a.id === currentEditingAction);
+                action.name = name;
+                action.points = points;
+                action.icon = icon;
+                action.color = color;
+                action.excludeFromTotal = excludeFromTotal;
+            } else {
+                const newAction = {
+                    id: (currentActionType === `positive` ? `p` : `n`) + Date.now(),
+                    name,
+                    points,
+                    icon,
+                    color,
+                    type: currentActionType,
+                    excludeFromTotal
+                };
+                pointActions.push(newAction);
+            }
+
+            saveData();
+            renderPointActions();
+            closeModal(`actionModal`);
+            showToast(currentEditingAction ? `積分項目已更新` : `積分項目已新增`);
+        }
+
+        function editAction(id) {
+            const action = pointActions.find(a => a.id === id);
+            openActionModal(action.type, id);
+        }
+
+        function deleteAction(id) {
+            if (!confirm(`確定要刪除此積分項目嗎？`)) return;
+
+            pointActions = pointActions.filter(a => a.id !== id);
+            saveData();
+            renderPointActions();
+            showToast(`積分項目已刪除`);
+        }
+
+        function openHistoryModal(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            document.getElementById(`historyModalTitle`).textContent = `${student.name} 的積分記錄`;
+            const list = document.getElementById(`historyList`);
+
+            const sorted = [...student.history].sort((a, b) => b.timestamp - a.timestamp);
+
+            list.innerHTML = sorted.map(h => {
+                const date = new Date(h.timestamp);
+                const excludeText = h.excludeFromTotal ? ` (不計)` : ``;
+                return `
+                    <div class="history-item">
+                        <div class="history-item-content">
+                            <div class="history-item-action">${h.action}${excludeText}</div>
+                            <div class="history-item-time">${date.toLocaleString(`zh-TW`)}</div>
+                        </div>
+                        <div class="history-item-points ${h.points > 0 ? `positive` : `negative`}">
+                            ${h.points > 0 ? `+` : ``}${h.points}
+                        </div>
+                    </div>
+                `;
+            }).join(``);
+
+            document.getElementById(`historyModal`).classList.add(`show`);
+        }
+
+        function openSummaryModal() {
+            document.getElementById(`summaryModal`).classList.add(`show`);
+            renderSummary();
+        }
+
+        function setPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll(`.period-btn`).forEach(btn => btn.classList.remove(`active`));
+            event.target.classList.add(`active`);
+
+            if (period === `custom`) {
+                const start = prompt(`請輸入起始日期 (YYYY-MM-DD):`);
+                const end = prompt(`請輸入結束日期 (YYYY-MM-DD):`);
+                if (start && end) {
+                    customStartDate = new Date(start);
+                    customEndDate = new Date(end);
+                }
+            }
+
+            renderSummary();
+        }
+
+        function renderSummary() {
+            const list = document.getElementById(`summaryList`);
+            const sortOrder = document.getElementById(`sortOrder`).value;
+
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
+            const lastWeekStart = new Date(weekStart);
+            lastWeekStart.setDate(weekStart.getDate() - 7);
+            const lastWeekEnd = new Date(weekStart);
+
+            const summaryData = students.map(student => {
+                const filteredHistory = student.history.filter(h => {
+                    const historyDate = new Date(h.timestamp);
+                    let inPeriod = true;
+
+                    if (currentPeriod === `today`) {
+                        inPeriod = historyDate >= today;
+                    } else if (currentPeriod === `week`) {
+                        inPeriod = historyDate >= weekStart;
+                    } else if (currentPeriod === `lastweek`) {
+                        inPeriod = historyDate >= lastWeekStart && historyDate < lastWeekEnd;
+                    } else if (currentPeriod === `custom` && customStartDate && customEndDate) {
+                        inPeriod = historyDate >= customStartDate && historyDate <= customEndDate;
+                    }
+
+                    return inPeriod && !h.excludeFromTotal;
+                });
+
+                const total = filteredHistory.reduce((sum, h) => sum + h.points, 0);
+
+                return {
+                    student,
+                    history: filteredHistory,
+                    total
+                };
+            });
+
+            if (sortOrder === `pointsDesc`) {
+                summaryData.sort((a, b) => b.total - a.total);
+            } else if (sortOrder === `pointsAsc`) {
+                summaryData.sort((a, b) => a.total - b.total);
+            } else if (sortOrder === `nameAsc`) {
+                summaryData.sort((a, b) => a.student.name.localeCompare(b.student.name));
+            } else if (sortOrder === `nameDesc`) {
+                summaryData.sort((a, b) => b.student.name.localeCompare(a.student.name));
+            }
+
+            list.innerHTML = summaryData.map(data => {
+                const detailsHtml = data.history.map(h => {
+                    const date = new Date(h.timestamp);
+                    return `
+                        <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                            <span>${h.action} - ${date.toLocaleString(`zh-TW`)}</span>
+                            <span style="font-weight: 600; color: ${h.points > 0 ? `var(--success)` : `var(--danger)`}">
+                                ${h.points > 0 ? `+` : ``}${h.points}
+                            </span>
+                        </div>
+                    `;
+                }).join(``);
+
+                return `
+                    <div class="summary-item" onclick="toggleSummaryDetails(this)">
+                        <div class="summary-item-header">
+                            <div class="summary-item-name">${data.student.name}</div>
+                            <div class="summary-item-total" style="color: ${data.total > 0 ? `var(--success)` : data.total < 0 ? `var(--danger)` : `var(--text-primary)`}">
+                                ${data.total > 0 ? `+` : ``}${data.total}分
+                            </div>
+                        </div>
+                        <div class="summary-item-details">
+                            ${detailsHtml || `<div style="color: var(--text-secondary);">此期間無記錄</div>`}
+                        </div>
+                    </div>
+                `;
+            }).join(``);
+        }
+
+        function toggleSummaryDetails(element) {
+            element.classList.toggle(`expanded`);
+        }
+
+        function openSettingsModal() {
+            document.getElementById(`fontSizeSetting`).value = settings.fontSize;
+            document.getElementById(`studentsPerRowSetting`).value = settings.studentsPerRow;
+            document.getElementById(`soundEnabledSetting`).checked = settings.soundEnabled;
+            document.getElementById(`showAvatarsSetting`).checked = settings.showAvatars;
+            document.getElementById(`showLeaderboardSetting`).checked = settings.showLeaderboard;
+            document.getElementById(`settingsModal`).classList.add(`show`);
+        }
+
+        function updateSettings() {
+            settings.fontSize = document.getElementById(`fontSizeSetting`).value;
+            settings.studentsPerRow = parseInt(document.getElementById(`studentsPerRowSetting`).value);
+            settings.soundEnabled = document.getElementById(`soundEnabledSetting`).checked;
+            settings.showAvatars = document.getElementById(`showAvatarsSetting`).checked;
+            settings.showLeaderboard = document.getElementById(`showLeaderboardSetting`).checked;
+
+            saveData();
+            applySettings();
+            renderStudents();
+            renderLeaderboard();
+            showToast(`設定已更新`);
+        }
+
+        function applySettings() {
+            document.body.className = `font-${settings.fontSize}`;
+            if (settings.theme === `dark`) {
+                document.body.classList.add(`dark-theme`);
+            }
+
+            const grid = document.getElementById(`studentsGrid`);
+            grid.className = `students-grid grid-${settings.studentsPerRow}`;
+        }
+
+        function toggleTheme() {
+            settings.theme = settings.theme === `light` ? `dark` : `light`;
+            saveData();
+            applySettings();
+        }
+
+        function openCustomPointsModal() {
+            if (selectedStudents.size === 0) {
+                showToast(`請先選擇學生`);
+                return;
+            }
+            document.getElementById(`customPoints`).value = ``;
+            document.getElementById(`customReason`).value = ``;
+            document.getElementById(`customPointsModal`).classList.add(`show`);
+        }
+
+        function applyCustomPoints() {
+            const points = parseInt(document.getElementById(`customPoints`).value);
+            const reason = document.getElementById(`customReason`).value.trim() || `自訂積分`;
+
+            if (isNaN(points)) {
+                showToast(`請輸入有效的分數`);
+                return;
+            }
+
+            selectedStudents.forEach(sid => {
+                addPoints(sid, points, reason);
+            });
+
+            closeModal(`customPointsModal`);
+            showToast(`已對 ${selectedStudents.size} 位學生套用自訂積分`);
+        }
+
+        function exportCSV() {
+            let csv = `學生姓名,總分,群組\n`;
+            students.forEach(student => {
+                const groupNames = student.groupIds.map(gid => {
+                    const group = groups.find(g => g.id === gid);
+                    return group ? group.name : ``;
+                }).join(`;`);
+                csv += `${student.name},${student.points},${groupNames}\n`;
+            });
+
+            const blob = new Blob([`\uFEFF` + csv], { type: `text/csv;charset=utf-8;` });
+            const link = document.createElement(`a`);
+            link.href = URL.createObjectURL(blob);
+            link.download = `學生積分_${new Date().toLocaleDateString()}.csv`;
+            link.click();
+            showToast(`CSV 已匯出`);
+        }
+
+        function exportJSON() {
+            const data = {
+                students,
+                groups,
+                pointActions,
+                settings,
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: `application/json` });
+            const link = document.createElement(`a`);
+            link.href = URL.createObjectURL(blob);
+            link.download = `學生積分備份_${new Date().toLocaleDateString()}.json`;
+            link.click();
+            showToast(`JSON 已匯出`);
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function batchReset() {
+            if (!confirm(`確定要重置所有學生的積分嗎？此操作無法復原！`)) return;
+
+            students.forEach(student => {
+                student.points = 0;
+                student.history = [];
+            });
+
+            undoStack = [];
+            saveData();
+            renderStudents();
+            renderLeaderboard();
+            showToast(`所有學生積分已重置`);
+        }
+
+        function playSound() {
+            if (!settings.soundEnabled) return;
+            const audio = new Audio(`data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUKnk7bVlHAU2kdXzzn0vBSh+zPLaizsKGGS46+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8bllHgU0j9X0z4IxBSh/zPLbjDsLGGS56+mjUhELTKXh8Q==`);
+            audio.play().catch(() => {});
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById(`toast`);
+            document.getElementById(`toastMessage`).textContent = message;
+            toast.classList.add(`show`);
+            setTimeout(() => {
+                toast.classList.remove(`show`);
+            }, 3000);
+        }
+
+        function toggleSearch() {
+            const query = prompt(`請輸入學生姓名:`);
+            if (!query) return;
+
+            const found = students.filter(s => s.name.includes(query));
+            if (found.length === 0) {
+                showToast(`找不到符合的學生`);
+                return;
+            }
+
+            clearSelection();
+            found.forEach(s => selectedStudents.add(s.id));
+            renderStudents();
+            showToast(`找到 ${found.length} 位學生`);
+        }
+
+        loadData();
+        renderStudents();
+        renderGroups();
+        renderPointActions();
+        renderLeaderboard();
+        applySettings();
+    </script>
+    <script src="https://cdn.kuse.ai/sdk.prd.js"></script>
+</body>
+</html>

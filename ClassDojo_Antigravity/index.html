@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班級點數管理系統</title>
+    <!-- Modern Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-font-size="medium">
+
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div>
+                <h1>班級點數管理系統</h1>
+                <p class="subtitle">追蹤與分析學生表現</p>
+            </div>
+            
+            <div class="header-actions">
+                <button id="toggleMultiSelectBtn" class="btn secondary-btn">☑️ 多選模式</button>
+                <button id="reportsBtn" class="btn reports-btn">📊 查看報表</button>
+                <button id="addStudentBtn" class="btn primary-btn">+ 新增學生</button>
+                <button id="settingsBtn" class="btn icon-btn" title="設定">⚙️</button>
+            </div>
+        </header>
+
+        <!-- View Tabs (Students / Groups) -->
+        <div class="view-tabs">
+            <button class="view-tab-btn active" data-view="students">🧑‍🎓 學生</button>
+            <button class="view-tab-btn" data-view="groups">👥 群組</button>
+        </div>
+
+        <!-- Main Content Grid (Students) -->
+        <main class="student-grid" id="studentGrid">
+            <!-- Student cards will be injected here -->
+        </main>
+
+        <!-- Main Content Grid (Groups) -->
+        <main class="group-grid hidden" id="groupGrid">
+            <!-- Group cards will be injected here -->
+        </main>
+        
+    </div>
+
+    <!-- Multi-select Action Bar (Floating at bottom) -->
+    <div id="multiSelectBar" class="multi-select-bar hidden">
+        <div class="multi-select-info">
+            <span class="multi-select-count" id="multiSelectCount">已選擇 0 位學生</span>
+        </div>
+        <div class="multi-select-actions">
+            <button class="btn primary-btn" id="multiAwardBtn">給予點數</button>
+            <button class="btn cancel-btn" id="cancelMultiBtn">取消多選</button>
+        </div>
+    </div>
+
+    <!-- Undo Toast Notification -->
+    <div id="undoToast" class="undo-toast hidden">
+        <span id="undoMessage">已給予點數</span>
+        <button id="undoActionBtn" class="btn warning-btn">↩️ 復原</button>
+    </div>
+
+    <!-- ADD STUDENT MODAL -->
+    <div id="addStudentModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>新增學生</h2>
+                <button class="close-modal-btn add-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="newStudentName">學生姓名 (支援批次匯入，每行一個名字)</label>
+                    <textarea id="newStudentName" rows="5" placeholder="例如：\n王小明\n陳小華\n林小美"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel-btn add-close">取消</button>
+                <button class="btn primary-btn" id="saveStudentBtn">儲存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT STUDENT MODAL -->
+    <div id="editStudentModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>編輯學生資料</h2>
+                <button class="close-modal-btn edit-student-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="edit-profile-preview">
+                    <img id="editStudentAvatarPreview" src="" class="student-avatar" alt="Avatar">
+                    <button id="randomizeAvatarBtn" class="btn secondary-btn small-btn">🎲 隨機變更頭像</button>
+                </div>
+                <div class="input-group">
+                    <label for="editStudentName">學生姓名</label>
+                    <input type="text" id="editStudentName">
+                </div>
+                <div class="input-group">
+                    <label for="editStudentAvatarStyle">頭像風格</label>
+                    <select id="editStudentAvatarStyle" class="filter-select" style="width: 100%">
+                        <option value="fun-emoji">可愛表情 (預設)</option>
+                        <option value="bottts">機器人</option>
+                        <option value="avataaars">人物角色</option>
+                        <option value="adventurer">探險家</option>
+                        <option value="lorelei">小精靈</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button class="btn negative-btn" id="deleteStudentBtn">🗑️ 刪除學生</button>
+                <div style="display:flex; gap:1rem;">
+                    <button class="btn cancel-btn edit-student-close">取消</button>
+                    <button class="btn primary-btn" id="saveEditStudentBtn">儲存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANAGE GROUP MODAL -->
+    <div id="manageGroupModal" class="modal-overlay hidden">
+        <div class="modal-content group-modal-content">
+            <div class="modal-header">
+                <h2 id="groupModalTitle">新增群組</h2>
+                <button class="close-modal-btn group-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="groupNameInput">群組名稱</label>
+                    <input type="text" id="groupNameInput" placeholder="例如：第一組">
+                </div>
+                <div class="group-selection-area">
+                    <label>選擇群組成員：</label>
+                    <div class="selection-grid" id="groupStudentSelectionGrid">
+                        <!-- Student checkboxes injected here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button class="btn negative-btn hidden" id="deleteGroupBtn">🗑️ 刪除群組</button>
+                <div style="display:flex; gap:1rem; margin-left:auto;">
+                    <button class="btn cancel-btn group-close">取消</button>
+                    <button class="btn primary-btn" id="saveGroupBtn">儲存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STUDENT/GROUP PROFILE MODAL (Award Points & View History) -->
+    <div id="studentProfileModal" class="modal-overlay hidden">
+        <div class="modal-content profile-modal">
+            <div class="modal-header">
+                <h2 style="display:flex; align-items:center; gap: 0.5rem;">
+                    <span id="currentProfileName"></span>
+                    <button id="editProfileBtn" class="icon-btn edit-profile-btn" title="編輯資料">✏️</button>
+                </h2>
+                <button class="close-modal-btn profile-close">×</button>
+            </div>
+            <div class="modal-body">
+                
+                <div class="tabs main-tabs">
+                    <button class="tab-btn active" data-profile-tab="award">給予點數</button>
+                    <button class="tab-btn" data-profile-tab="history" id="profileHistoryTabBtn">檢視紀錄</button>
+                </div>
+
+                <div class="profile-tab-content active" id="profileAwardTab">
+                    <div class="tabs sub-tabs">
+                        <button class="sub-tab-btn active" data-award-tab="positive">優點</button>
+                        <button class="sub-tab-btn" data-award-tab="needs-work">待改進</button>
+                    </div>
+                    
+                    <div class="award-content active" id="positiveItems"></div>
+                    <div class="award-content" id="needsWorkItems"></div>
+                </div>
+
+                <div class="profile-tab-content" id="profileHistoryTab">
+                    <ul class="history-list" id="studentHistoryList">
+                        <!-- Logs injected here -->
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- REPORTS MODAL -->
+    <div id="reportsModal" class="modal-overlay hidden">
+        <div class="modal-content reports-modal-content" style="max-width: 900px; width: 95%;">
+            <div class="modal-header">
+                <h2>📊 班級報表與動態</h2>
+                <button class="close-modal-btn reports-close">&times;</button>
+            </div>
+            <div class="reports-controls">
+                <div class="filter-group">
+                    <label>時間範圍</label>
+                    <select id="timeRangeFilter" class="filter-select">
+                        <option value="all">📝 系統總分 (所有紀錄)</option>
+                        <option value="today">📅 今天</option>
+                        <option value="week">📅 本週</option>
+                        <option value="month">📅 本月</option>
+                        <option value="custom">⚙️ 自訂範圍...</option>
+                    </select>
+                    <div id="customDateContainer" class="custom-date-container hidden">
+                        <input type="date" id="startDateFilter">
+                        <span>至</span>
+                        <input type="date" id="endDateFilter">
+                    </div>
+                </div>
+                
+                <div class="sort-group">
+                    <label>報表排序方式</label>
+                    <div class="sort-tabs">
+                        <button class="sort-btn active" data-sort="score">🏆 分數</button>
+                        <button class="sort-btn" data-sort="name">📝 姓名</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reports-info-banner">
+                提示：此報表僅顯示計入總分的項目。點擊左側學生，可於右側查看該學生的專屬紀錄。
+            </div>
+
+            <div style="display: flex; gap: 1.5rem; height: 50vh; overflow: hidden;">
+                <!-- Left: Leaderboard -->
+                <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1.1em; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        報表統計
+                        <button id="resetReportFilterBtn" class="small-btn secondary-btn hidden" style="font-size: 0.8em; padding: 0.2rem 0.5rem;">查看全班</button>
+                    </h3>
+                    <ul class="reports-list" id="reportsList" style="flex: 1; max-height: none; overflow-y: auto;">
+                        <!-- Students injected here -->
+                    </ul>
+                </div>
+
+                <!-- Right: Activity Log -->
+                <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; background: rgba(255,255,255,0.5); border-radius: 12px; padding: 0.5rem; border: 1px solid var(--border-color);">
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1.1em; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;" id="reportActivityTitle">全班最近紀錄</h3>
+                    <ul class="history-list" id="reportActivityList" style="flex: 1; max-height: none; overflow-y: auto;">
+                        <!-- History injected here -->
+                    </ul>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem; border-top: 1px solid var(--border-color); margin-top: 0.5rem;">
+                        <button id="reportPrevPageBtn" class="small-btn cancel-btn" disabled>上一頁</button>
+                        <span id="reportPageInfo" style="font-size: 0.85em; color: var(--text-secondary);">頁數 1 / 1</span>
+                        <button id="reportNextPageBtn" class="small-btn cancel-btn" disabled>下一頁</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="modal-overlay hidden">
+        <div class="modal-content settings-modal-content">
+            <div class="modal-header">
+                <h2>⚙️ 系統設定</h2>
+                <button class="close-modal-btn settings-close">&times;</button>
+            </div>
+            <div class="modal-body settings-body">
+                
+                <div class="settings-section">
+                    <h3>🖥️ 顯示與聲音設定</h3>
+                    <div class="settings-row" style="margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 500;">
+                            <input type="checkbox" id="enableSoundSetting" checked style="width: 1.2rem; height: 1.2rem;">
+                            🔊 開啟加扣分音效
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <div class="input-group" style="flex:1;">
+                            <label for="fontSizeSelect">字體大小</label>
+                            <select id="fontSizeSelect" class="filter-select">
+                                <option value="small">小</option>
+                                <option value="medium" selected>中</option>
+                                <option value="large">大</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="flex:1;">
+                            <label for="gridColsRange">每列顯示人數 <span id="gridColsLabel" class="highlight-badge">5</span></label>
+                            <input type="range" id="gridColsRange" min="2" max="8" value="5" style="width:100%">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>⭐ 優點行為</h3>
+                    <ul id="settingsPositiveList" class="settings-list"></ul>
+                    <div class="add-item-form">
+                        <input type="text" id="newPositiveLabel" placeholder="例如：團隊合作">
+                        <input type="number" id="newPositiveValue" placeholder="點數" value="1" min="1">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="newPositiveIgnore">
+                            <label for="newPositiveIgnore" class="small-text">不計入「報表」總分</label>
+                        </div>
+                        <button class="btn add-item-btn" id="addPositiveBtn">+</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>🚩 待改進行為</h3>
+                    <ul id="settingsNeedsWorkList" class="settings-list"></ul>
+                    <div class="add-item-form">
+                        <input type="text" id="newNeedsWorkLabel" placeholder="例如：上課講話">
+                        <input type="number" id="newNeedsWorkValue" placeholder="點數 (負數)" value="-1" max="-1">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="newNeedsWorkIgnore">
+                            <label for="newNeedsWorkIgnore" class="small-text">不計入「報表」總分</label>
+                        </div>
+                        <button class="btn add-item-btn" id="addNeedsWorkBtn">+</button>
+                    </div>
+                </div>
+                
+                <div class="settings-section" style="border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 2rem;">
+                    <h3>⚠️ 危險區域</h3>
+                    <button class="btn negative-btn" id="resetAllPointsBtn" style="width:100%">重置所有學生點數歸零 (學期末清算)</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
