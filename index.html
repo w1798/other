@@ -4,13 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Directory Links</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        a { display: block; margin: 5px 0; text-decoration: none; padding: 10px; border: 1px solid #ccc; border-radius: 5px; color: #0056b3; background-color: #f9f9f9; }
+        a:hover { background-color: #e2e2e2; }
+    </style>
 </head>
 <body>
-    <h1>Directory Links</h1>
-    <ul>
-        <li><a href="ClassDojo_Antigravity/index.html">ClassDojo Antigravity</a></li>
-        <li><a href="ClassDojo_kuse/index.html">ClassDojo Kuse</a></li>
-        <li><a href="Garbage/index.html">Garbage</a></li>
-    </ul>
+    <h1>Auto-Generated Links</h1>
+    <div id="links">
+        <!-- Dynamic links will be injected here -->
+    </div>
+    <script>
+        async function fetchDirectories() {
+            const response = await fetch('https://api.github.com/repos/w1798/other/contents');
+            const directories = await response.json();
+            const linkContainer = document.getElementById('links');
+
+            directories.forEach(item => {
+                if (item.type === 'dir') {
+                    const link = document.createElement('a');
+                    link.href = item.html_url;
+                    link.textContent = item.name;
+                    linkContainer.appendChild(link);
+                }
+            });
+        }
+
+        fetchDirectories();
+    </script>
 </body>
 </html>
