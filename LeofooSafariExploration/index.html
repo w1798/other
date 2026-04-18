@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>六福村校外教學手冊 - 大有國小五年級專屬</title>
+    <style>
+        :root {
+            --primary: #FF9800;
+            --secondary: #2196F3;
+            --danger: #FF5252;
+            --success: #4CAF50;
+            --text: #333;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: var(--text);
+            -webkit-text-size-adjust: 100%;
+        }
+
+        header {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('https://images.unsplash.com/photo-1505673542670-a5e3ff5b14a3?auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            text-shadow: 1px 1px 8px rgba(0,0,0,0.7);
+        }
+
+        header h1 { margin: 0; font-size: 2rem; }
+        header p { margin: 10px 0 0; font-size: 1.1rem; }
+
+        /* 調整容器左右寬度：max-width 控制最大寬度 */
+        .container {
+            padding: 15px;
+            max-width: 90%; /* 這裡可以調整框框的左右大小 */
+            margin: 0 auto;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px; /* 這裡調整框內字跟邊框的距離 */
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 12px;
+        }
+
+        .title-row .icon { font-size: 1.6rem; margin-right: 12px; }
+        .title-row h2 { margin: 0; font-size: 1.3rem; color: var(--secondary); }
+
+        /* 重要提醒顏色 */
+        .urgent { border: 2px solid var(--danger); background-color: #FFF9F9; }
+        .urgent h2 { color: var(--danger); }
+
+        ul { list-style: none; padding: 0; margin: 0; }
+
+        /* 調整 li 中文字的大小 */
+        li {
+            padding: 14px 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            align-items: flex-start;
+            font-size: 1.1rem; /* 👈 這裡調整字體大小 */
+            line-height: 1.5;
+        }
+
+        li:last-child { border-bottom: none; }
+
+        li::before {
+            content: "◆";
+            color: var(--primary);
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #d32f2f;
+            background-color: #ffecb3;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 0.9rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🎢 六福村大冒險</h1>
+    <p>大有國小五年級校外教學：安全與禮儀手冊</p>
+</header>
+
+<div class="container">
+
+    <div class="section-card urgent">
+        <div class="title-row">
+            <span class="icon">⚠️</span>
+            <h2>【重點提醒】自我管理</h2>
+        </div>
+        <ul>
+            <li><span class="highlight">金錢、貴重物品自行保管：</span> 手機、錢包務必隨身攜帶，離開遊樂設施或座位前請再次檢查，老師與園區不負保管責任。</li>
+            <li><span class="highlight">行動分組不落單：</span> 嚴禁獨自行動。無論去廁所或買東西，必須整組一起去，確保彼此都在視線內。</li>
+            <li><span class="highlight">不敢玩的就不要玩：</span> 了解自己的身體限制，不代表膽小。如果心裡恐懼，請勇敢說「不」，在下方休息區等待同學。</li>
+            <li><span class="highlight">不要慫恿同學玩：</span> 尊重每個人的選擇，嚴禁嘲諷或強迫不敢玩的同學參加，這才是真正的勇敢與風度。</li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <div class="title-row">
+            <span class="icon">🎒</span>
+            <h2>出發前的準備(攜帶物品清單)</h2>
+        </div>
+        <ul>
+            <li><strong>穿著建議：</strong> 穿著校服及運動鞋，並攜帶一件薄外套（預防遊覽車冷氣過強）</li>
+            <li><strong>輕便雨衣與塑膠袋：</strong> 玩「大峽谷急流泛舟」必備，並帶一個塑膠袋裝濕掉的雨衣。</li>
+            <li><strong>文具與證件：</strong> 攜帶原子筆、筆記本以及<strong>健保卡</strong>（以備不時之需）。</li>
+            <li><strong>備用襪子：</strong> 玩水後若鞋襪濕掉，換上乾襪子才不會讓腳受傷或感冒。</li>
+            <li><strong>衛生紙/濕紙巾：</strong> 用餐或玩樂後清潔手部非常方便。</li>
+            <li><strong>個人藥品：</strong> 暈車藥（去回程）、過敏藥、氣喘藥或OK蹦，並請告知組員你的藥品位置。</li>
+            <li><strong>飲水瓶：</strong> 園區內有飲水機可補充水分，省錢又環保。</li>
+            <li><strong>防曬/遮陽工具：</strong> 遮陽帽或小摺疊傘，預防下雨或戶外排隊時曬傷或中暑。</li>
+            <li><strong>少量零用錢：</strong> 不要超過 500 元，並妥善收入內層拉鍊袋或錢包中。</li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <div class="title-row">
+            <span class="icon">🎢</span>
+            <h2>設施安全守則</h2>
+        </div>
+        <ul>
+            <li><strong>遊覽車規範：</strong> 上車繫好安全帶，行駛中不站立打鬧。<strong>車上禁止吃零食或含糖飲料</strong>（避免環境髒亂及暈車嘔吐）。</li>
+            <li><strong>遵守規則：</strong> 體驗設施前請詳讀警語（如身高限制、心臟病提醒），聽從工作人員指揮。</li>
+            <li><strong>排隊禮儀：</strong> 嚴禁插隊或推擠，排隊時保持安靜，不吵鬧影響他人。</li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <div class="title-row">
+            <span class="icon">🌟</span>
+            <h2>優質五年級生表現</h2>
+        </div>
+        <ul>
+            <li><strong>環境維護：</strong> 垃圾隨手帶走或丟進垃圾桶，維持園區整潔並愛護公物。</li>
+            <li><strong>公共禮節：</strong> 參觀時保持安靜、有禮貌，不奔跑喧嘩，對司機、導遊及志工主動問好並說聲謝謝。</li>
+            <li><strong>用餐秩序：</strong> 飯前洗手，用餐後自行清理桌面，展現良好家教。</li>
+            <li><strong>集合守時：</strong> 隨時注意時間，<strong>提前 5 分鐘</strong>抵達集合點，不讓全班等待。</li>
+            <li><strong>緊急應變：</strong> 發生身體不適或走失時，保持冷靜，尋找身穿工作服的員工作人員或聯繫老師。</li>
+        </ul>
+    </div>
+    
+    <div class="section-card" style="border-left: 5px solid var(--success);">
+        <div class="title-row">
+            <span class="icon">🌿</span>
+            <h2>【探索學習】親近大自然</h2>
+        </div>
+        <ul>
+            <li><strong>尊重生命：</strong> 在「非洲部落」觀察動物時，請保持安靜，<span class="highlight">嚴禁拍打玻璃或大聲尖叫</span>，以免驚擾動物。</li>
+            <li><strong>生態觀察：</strong> 觀察不同動物的習性與棲息環境，想想牠們在野外與在園區內的差異。</li>
+            <li><strong>重學習、輕玩樂：</strong> 除了排隊玩設施，也請空出時間參觀「鳥類表演」或「動物導覽」，了解生物多樣性的重要。</li>
+            <li><strong>環境永續：</strong> 體會大自然之美，從自己做起減少浪費，不把垃圾留在動物的家園。</li>
+        </ul>
+    </div>
+
+<footer>
+    🌱 <b>這不僅是一場遊玩，更是一次大自然的探索教室。</b><br>
+    期待大家在歡樂中細心觀察、用心學習，帶著滿滿的知識與回憶平安歸來！
+</footer>
+
+<footer>
+  <a href="https://w1798.github.io/web/" target="_blank">&copy; 2026<script>const y=new Date().getFullYear(); if(y>2026)document.write("-"+y);</script> Charles Nextime</a> · 
+  <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPLv3</a>
+  <span id="busuanzi_container_page_pv">
+    本頁使用量 <span id="busuanzi_value_page_pv"></span> 次
+</span>
+</footer>
+
+
+<style>
+#busuanzi_container_page_pv {
+    color: #888;
+    font-size: 0.9rem;
+    margin-left: 15px;
+    border-left: 1px solid rgba(128, 128, 128, 0.5); /* 計數器加一條細細的分隔線 */
+    padding-left: 15px;
+}
+
+#busuanzi_value_page_pv {
+    color: #00b894;
+    font-weight: bold;
+}
+</style>
+
+
+<script>
+(function() {
+    // return; // 取消此行可停止計數，直接在這裡回傳，後面的代碼完全不執行
+    
+    // 計數器這樣無論是 /web/ 還是 /web 都會統一變成 /web 
+    const path = window.location.pathname.replace(/\/$/, ""); 
+    const TIME_KEY = `VERCOUNT_TIME_${path}`; // 每個分頁獨立計算冷卻時間
+    const VAL_KEY = `VERCOUNT_VAL_${path}`;   // 每個分頁獨立存儲 PV 數
+    
+    const COOL_DOWN = 30 * 60 * 1000; 
+    const now = Date.now();
+    const lastVisit = localStorage.getItem(TIME_KEY);
+    
+    // 計算剩餘秒數
+    const timeLeft = lastVisit ? Math.ceil((parseInt(lastVisit) + COOL_DOWN - now) / 1000) : 0;
+
+    if (timeLeft <= 0) {
+        console.log(`%c[Vercount]%c 路徑 ${path} 冷卻結束，更新數據...`, "color:#00b894;font-weight:bold", "color:inherit");
+        
+        const script = document.createElement('script');
+        script.src = "https://events.vercount.one/js";
+        script.defer = true;
+        
+        script.onload = () => {
+            setTimeout(() => {
+                const pvVal = document.getElementById('busuanzi_value_page_pv')?.innerText;
+                if (pvVal) {
+                    localStorage.setItem(VAL_KEY, pvVal);
+                    localStorage.setItem(TIME_KEY, now); // 成功抓到才更新時間
+                }
+            }, 1500);
+        };
+        document.head.appendChild(script);
+    } else {
+        const lastVal = localStorage.getItem(VAL_KEY) || "--";
+        console.log(`%c[Vercount]%c ${path} 冷卻中（剩 ${timeLeft} 秒）。顯示舊值：${lastVal}`, "color:#f1c40f;font-weight:bold", "color:inherit");
+
+        window.addEventListener('load', () => {
+            const pvSpan = document.getElementById('busuanzi_value_page_pv');
+            if (pvSpan) pvSpan.innerText = lastVal;
+        });
+    }
+})();
+</script>
+
+
+</div>
+
+</body>
+</html>
