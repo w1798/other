@@ -103,6 +103,38 @@
             font-size: 0.9rem;
             color: #999;
         }
+
+        /* 手機版排版優化 */
+        @media screen and (max-width: 768px) {
+            .container {
+                max-width: 98%;
+                padding: 10px;
+            }
+            
+            .section-card {
+                padding: 20px 15px;
+            }
+
+            li {
+                display: block; /* 核心修正：取消 flex 橫向排列 */
+                position: relative;
+                padding-left: 25px; /* 為符號留出空間 */
+                padding-bottom: 12px;
+            }
+
+            li::before {
+                position: absolute;
+                left: 0;
+                top: 14px; /* 對齊第一行文字 */
+            }
+
+            /* 核心修正：將標題改為區塊顯示，達成上下排 */
+            .highlight, li strong {
+                display: block;
+                margin-bottom: 5px;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -135,7 +167,7 @@
         <ul>
             <li><strong>穿著建議：</strong> 穿著校服及運動鞋，並攜帶一件薄外套（預防遊覽車冷氣過強）</li>
             <li><strong>輕便雨衣與塑膠袋：</strong> 玩「大峽谷急流泛舟」必備，並帶一個塑膠袋裝濕掉的雨衣。</li>
-            <li><strong>文具與證件：</strong> 攜帶原子筆、筆記本以及<strong>健保卡</strong>（以備不時之需）。</li>
+            <li><strong>文具與證件：</strong> 攜帶原子筆、筆記本以及「健保卡」（以備不時之需）。</li>
             <li><strong>備用襪子：</strong> 玩水後若鞋襪濕掉，換上乾襪子才不會讓腳受傷或感冒。</li>
             <li><strong>衛生紙/濕紙巾：</strong> 用餐或玩樂後清潔手部非常方便。</li>
             <li><strong>個人藥品：</strong> 暈車藥（去回程）、過敏藥、氣喘藥或OK蹦，並請告知組員你的藥品位置。</li>
@@ -151,7 +183,7 @@
             <h2>設施安全守則</h2>
         </div>
         <ul>
-            <li><strong>遊覽車規範：</strong> 上車繫好安全帶，行駛中不站立打鬧。<strong>車上禁止吃零食或含糖飲料</strong>（避免環境髒亂及暈車嘔吐）。</li>
+            <li><strong>遊覽車規範：</strong> 上車繫好安全帶，行駛中不站立打鬧。「車上禁止吃零食或含糖飲料」（避免環境髒亂及暈車嘔吐）。</li>
             <li><strong>遵守規則：</strong> 體驗設施前請詳讀警語（如身高限制、心臟病提醒），聽從工作人員指揮。</li>
             <li><strong>排隊禮儀：</strong> 嚴禁插隊或推擠，排隊時保持安靜，不吵鬧影響他人。</li>
         </ul>
@@ -166,7 +198,7 @@
             <li><strong>環境維護：</strong> 垃圾隨手帶走或丟進垃圾桶，維持園區整潔並愛護公物。</li>
             <li><strong>公共禮節：</strong> 參觀時保持安靜、有禮貌，不奔跑喧嘩，對司機、導遊及志工主動問好並說聲謝謝。</li>
             <li><strong>用餐秩序：</strong> 飯前洗手，用餐後自行清理桌面，展現良好家教。</li>
-            <li><strong>集合守時：</strong> 隨時注意時間，<strong>提前 5 分鐘</strong>抵達集合點，不讓全班等待。</li>
+            <li><strong>集合守時：</strong> 隨時注意時間，「提前 5 分鐘」抵達集合點，不讓全班等待。</li>
             <li><strong>緊急應變：</strong> 發生身體不適或走失時，保持冷靜，尋找身穿工作服的員工作人員或聯繫老師。</li>
         </ul>
     </div>
@@ -177,7 +209,7 @@
             <h2>【探索學習】親近大自然</h2>
         </div>
         <ul>
-            <li><strong>尊重生命：</strong> 在「非洲部落」觀察動物時，請保持安靜，<span class="highlight">嚴禁拍打玻璃或大聲尖叫</span>，以免驚擾動物。</li>
+            <li><strong>尊重生命：</strong> 在「非洲部落」觀察動物時，請保持安靜，「嚴禁拍打玻璃或大聲尖叫」，以免驚擾動物。</li>
             <li><strong>生態觀察：</strong> 觀察不同動物的習性與棲息環境，想想牠們在野外與在園區內的差異。</li>
             <li><strong>重學習、輕玩樂：</strong> 除了排隊玩設施，也請空出時間參觀「動物見面會」或「動物展示區」，搭乘蒸氣火車進入「草食區」，搭乘猛獸巴士深入到「猛獸區」，了解生物多樣性的重要。</li>
             <li><strong>環境永續：</strong> 體會大自然之美，從自己做起減少浪費，不把垃圾留在動物的家園。</li>
